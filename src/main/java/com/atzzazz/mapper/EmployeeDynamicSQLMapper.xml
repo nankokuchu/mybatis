@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atzzazz.mapper.EmployeeDynamicSQLMapper">
+    <cache eviction="" readOnly="" size="" flushInterval="" type=""></cache>
+
+    <resultMap id="zzEMP" type="com.atzzazz.pojo.Employee">
+        <id column="id" property="id"/>
+        <result column="last_name" property="lastName"/>
+        <result column="gender" property="gender"/>
+        <result column="email" property="email"/>
+        <association property="school"
+                     select="com.atzzazz.mapper.SchoolMapper.getById"
+                     column="school_id">
+        </association>
+    </resultMap>
+    <select id="getEmployees" resultMap="zzEMP">
+        select *
+        from mybatis.tbl_employee
+        <trim prefix="where" prefixOverrides="and">
+            <if test="id!=null">
+                id=#{id}
+            </if>
+            <if test="lastName!=null and latName!=''">
+                and last_name like #{lastName}
+            </if>
+            <if test="email!=null">
+                and email = #{email}
+            </if>
+            <if test="gender==0 or gender==1">
+                and gender = #{gender}
+            </if>
+        </trim>
+    </select>
+
+    <!--select * from mybatis.tbl_employee where id in (1,2,3)-->
+    <select id="getEmpsBYConditionForeach" resultType="com.atzzazz.pojo.Employee">
+        select * from mybatis.tbl_employee where id in
+        <foreach collection="ids" item="item_id" open="(" close=")" separator=",">
+            #{item_id}
+        </foreach>
+    </select>
+
+    <select id="getEmpsBYConditionChoose" resultType="com.atzzazz.pojo.Employee">
+        select * from mybatis.tbl_employee
+        <where>
+            <choose>
+                <when test="id!=null">
+                    id=#{id}
+                </when>
+                <when test="lastName!=null">
+                    lastName like #{lastName}
+                </when>
+                <when test="email!=null">
+                    email=#{email}
+                </when>
+                <when test="gender!=null">
+                    gender=#{gender}
+                </when>
+                <otherwise>
+                    1=1
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+</mapper>

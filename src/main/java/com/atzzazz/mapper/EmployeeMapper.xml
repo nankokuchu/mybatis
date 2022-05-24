@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atzzazz.mapper.EmployeeMapper">
+    <!--Employee getEmpById(Integer id);-->
+    <resultMap id="myEmp" type="com.atzzazz.pojo.Employee">
+        <id column="id" property="id"></id>
+        <result column="last_name" property="lastName"></result>
+        <result column="gender" property="gender"></result>
+        <result column="email" property="email"></result>
+    </resultMap>
+    <select id="getEmpById" resultMap="myEmp">
+        select *
+        from mybatis.tbl_employee
+        where id = #{id}
+    </select>
+
+    <!--查找员工以及员工的学校-->
+    <resultMap id="MyEmp01" type="com.atzzazz.pojo.Employee">
+        <id column="id" property="id"></id>
+        <result column="last_name" property="lastName"></result>
+        <result column="gender" property="gender"></result>
+        <result column="email" property="email"></result>
+        <result column="sid" property="school.id"></result>
+        <result column="school_name" property="school.schoolName"></result>
+    </resultMap>
+
+    <resultMap id="MyEmp02" type="com.atzzazz.pojo.Employee">
+        <id column="id" property="id"></id>
+        <result column="last_name" property="lastName"></result>
+        <result column="gender" property="gender"></result>
+        <result column="email" property="email"></result>
+        <association property="school" javaType="com.atzzazz.pojo.School">
+            <id column="sid" property="id"></id>
+            <result column="school_name" property="schoolName"></result>
+        </association>
+    </resultMap>
+
+    <!--Employee getEmpAndSchool(Integer id);-->
+    <select id="getEmpAndSchool" resultMap="MyEmp02">
+        select e.id          id,
+               e.last_name   last_name,
+               e.gender      gender,
+               e.email       email,
+               s.id          sid,
+               s.school_name school_name
+        from mybatis.tbl_employee e
+                 inner join mybatis.tbl_school s on e.`school_id` = s.`id`
+        where e.id = #{id};
+    </select>
+
+    <!--使用 association 进行分布式查询-->
+    <resultMap id="MyEmpStep" type="com.atzzazz.pojo.Employee">
+        <id column="id" property="id"></id>
+        <result column="last_name" property="lastName"></result>
+        <result column="gender" property="gender"></result>
+        <result column="email" property="email"></result>
+        <association property="school"
+                     select="com.atzzazz.mapper.SchoolMapper.getById"
+                     column="school_id">
+        </association>
+    </resultMap>
+    <select id="getEmpByIdStep" resultMap="MyEmpStep">
+        select *
+        from mybatis.tbl_employee
+        where id = #{id}
+    </select>
+
+    <!--List<Employee> getEmpsbySchoolId(Integer id);-->
+    <select id="getEmpsBySchoolId" resultType="com.atzzazz.pojo.Employee">
+        select *
+        from mybatis.tbl_employee
+        where school_id = #{schoolId}
+    </select>
+
+</mapper>

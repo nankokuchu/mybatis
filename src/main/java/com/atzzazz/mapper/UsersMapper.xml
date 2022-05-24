@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atzzazz.mapper.UserMapper">
+
+    <select id="getUsersByUserName" resultType="com.atzzazz.pojo.Users">
+        select * from mybatis.users where user_name like #{userName}
+    </select>
+
+    <select id="getUserByMap" resultType="com.atzzazz.pojo.Users">
+        select *
+        from mybatis.users
+        where id = #{id}
+          and user_name = #{userName}
+    </select>
+    <select id="selectUserById" parameterType="int" resultType="com.atzzazz.pojo.Users">
+        select *
+        from mybatis.users
+        where id = #{id}
+    </select>
+
+    <select id="selectUsersByIdAndUserName" resultType="com.atzzazz.pojo.Users">
+        select *
+        from mybatis.users
+        where id = #{id}
+          and user_name = #{userName}
+    </select>
+
+    <!--    List<Users> selectAllUsers(); -->
+    <select id="selectAllUsers" resultType="com.atzzazz.pojo.Users">
+        select *
+        from mybatis.users
+    </select>
+
+    <insert id="addUsers" parameterType="com.atzzazz.pojo.Users"
+            useGeneratedKeys="true"
+            keyProperty="id" flushCache="">
+        insert into mybatis.users (user_name, user_pwd, real_name, nation, card_id)
+        VALUES (#{userName}, #{userPwd}, #{realName}, #{nation}, #{cardId})
+    </insert>
+
+    <update id="updateUsers" parameterType="com.atzzazz.pojo.Users">
+        update mybatis.users
+        set user_name= #{userName},
+            user_pwd=#{userPwd},
+            real_name=#{realName},
+            nation=#{nation},
+            card_id=#{cardId}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUsers" parameterType="int">
+        delete
+        from mybatis.users
+        where id = #{id}
+    </delete>
+
+</mapper>
